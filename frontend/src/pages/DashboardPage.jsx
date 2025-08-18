@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Plus, Download, FileText, Calendar, Bell, Search, Filter } from 'lucide-react';
 import StatsCards from '../components/dashboard/StatsCards';
+import StatsAccordion from '../components/dashboard/StatsAccordion';
 import RecentReports from '../components/dashboard/RecentReports';
 import ScoreChart from '../components/dashboard/ScoreChart';
 import DashboardSkeleton from '../components/dashboard/DashboardSkeleton';
@@ -122,67 +123,85 @@ const DashboardPage = () => {
       variants={pageVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-screen bg-[#000000] py-6"
+      className="min-h-screen bg-[#000000] py-4 sm:py-6"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
         {/* Enhanced Header */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0"
+          className="flex flex-col space-y-4 mb-6 sm:mb-8"
         >
-         
+          {/* Welcome Section - Mobile First */}
+          <div className="text-center sm:text-left">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+              Welcome back, {user?.name?.split(' ')[0] || 'User'}
+            </h1>
+            <p className="text-sm sm:text-base text-[#737373] mt-1">
+              Track your ATS optimization progress
+            </p>
+          </div>
           
-          <div className="flex items-center space-x-3">
+          {/* Action Buttons - Single Row */}
+          <div className="flex items-center gap-2 sm:gap-3 justify-center sm:justify-start">
             <Button
               variant="outline"
               size="sm"
-              className="inline-flex items-center space-x-2 text-sm bg-[#000000] hover:bg-[#171717] text-[#A3A3A3] border-[#373737]"
+              className="inline-flex items-center justify-center space-x-2 text-sm bg-[#000000] hover:bg-[#171717] text-[#A3A3A3] border-[#373737] flex-1 sm:flex-none"
             >
               <Bell className="w-4 h-4" />
-              <span>Notifications</span>
+              <span className="hidden xs:inline">Notify</span>
+              <span className="xs:hidden">Notify</span>
             </Button>
             
             <Button
               onClick={handleExportDashboard}
               disabled={!stats || isExporting}
               variant="outline"
-              className="inline-flex items-center space-x-2 text-sm bg-[#000000] hover:bg-[#171717] text-[#A3A3A3] border-[#373737]"
+              size="sm"
+              className="inline-flex items-center justify-center space-x-2 text-sm bg-[#000000] hover:bg-[#171717] text-[#A3A3A3] border-[#373737] flex-1 sm:flex-none"
             >
               <Download className="w-4 h-4" />
-              <span>{isExporting ? 'Exporting...' : 'Export Report'}</span>
+              <span>{isExporting ? 'Exporting...' : 'Export'}</span>
             </Button>
             
             <Button
               asChild
               variant="outline"
               size="sm"
-              className="inline-flex items-center space-x-2 text-sm bg-[#000000] hover:bg-[#171717] text-[#A3A3A3] border-[#373737]"
+              className="inline-flex items-center justify-center space-x-2 text-sm bg-[#000000] hover:bg-[#171717] text-[#A3A3A3] border-[#373737] flex-1 sm:flex-none"
             >
               <Link to="/">
                 <Plus className="w-4 h-4" />
-                <span>New Analysis</span>
+                <span className="hidden xs:inline">Analyze</span>
+                <span className="xs:hidden">Analyze</span>
               </Link>
             </Button>
           </div>
         </motion.div>
 
         {/* Stats Cards */}
-        <motion.div variants={itemVariants} className="mb-8">
-          <StatsCards stats={stats} />
+        <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
+          {/* Desktop: Cards, Mobile: Accordion */}
+          <div className="hidden sm:block">
+            <StatsCards stats={stats} />
+          </div>
+          <div className="block sm:hidden">
+            <StatsAccordion stats={stats} />
+          </div>
         </motion.div>
 
         {/* Quick Actions Bar */}
         <motion.div
           variants={itemVariants}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <Card className="bg-[#0A0A0A] border-[#171717]">
-            <CardContent className="p-8">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
               <div className="flex flex-col space-y-4">
-                {/* Header Row */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                  <div className="flex flex-wrap items-center gap-3">
-                    {/* Quick Actions Title with Search and Filter inside */}
+                {/* Header Row - Mobile Stack */}
+                <div className="flex flex-col space-y-4">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    {/* Quick Actions Title */}
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -192,49 +211,31 @@ const DashboardPage = () => {
                         <Filter className="w-3.5 h-3.5" />
                       </div>
                       <span>Quick Actions</span>
-                      
-                      {/* Search Reports inside */}
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsSearchActive(!isSearchActive);
-                        }}
-                        className={`border hover:border-[#A3A3A3] px-1.5 py-1 rounded-full transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 cursor-pointer flex items-center space-x-1 ${
-                          isSearchActive ? 'text-blue-400 border-blue-400' : 'text-white border-[#404040]'
-                        }`}
-                      >
-                        <div className={`border rounded-full p-0.5 flex items-center justify-center ${
-                          isSearchActive ? 'border-blue-400' : 'border-[#404040]'
-                        }`}>
-                          <Search className="w-2.5 h-2.5" />
-                        </div>
-                        <span className="text-xs">Search</span>
-                      </motion.div>
+                    </motion.div>
 
-                      {/* Filter inside */}
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                        className="text-white hover:text-[#A3A3A3] border border-[#404040] hover:border-[#A3A3A3] px-1.5 py-1 rounded-full transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 cursor-pointer flex items-center space-x-1"
-                      >
-                        <div className="border border-[#404040] rounded-full p-0.5 flex items-center justify-center">
-                          <Filter className="w-2.5 h-2.5" />
-                        </div>
-                        <span className="text-xs">Filter</span>
-                      </motion.div>
+                    {/* Search Toggle - Mobile */}
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setIsSearchActive(!isSearchActive)}
+                      className={`border hover:border-[#A3A3A3] px-2 py-1.5 rounded-full transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 cursor-pointer flex items-center space-x-1.5 ${
+                        isSearchActive ? 'text-blue-400 border-blue-400' : 'text-white border-[#404040]'
+                      }`}
+                    >
+                      <div className={`border rounded-full p-0.5 flex items-center justify-center ${
+                        isSearchActive ? 'border-blue-400' : 'border-[#404040]'
+                      }`}>
+                        <Search className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs">Search</span>
                     </motion.div>
                   </div>
                   
-                  {/* Last Updated */}
+                  {/* Last Updated - Mobile Responsive */}
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="text-[#737373] hover:text-[#A3A3A3] border border-[#404040] hover:border-[#A3A3A3] px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 cursor-pointer flex items-center space-x-1.5 w-fit"
+                    className="text-[#737373] hover:text-[#A3A3A3] border border-[#404040] hover:border-[#A3A3A3] px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 cursor-pointer flex items-center space-x-1.5 w-fit sm:ml-auto"
                   >
                     <div className="border border-[#404040] rounded-full p-0.5 flex items-center justify-center">
                       <Calendar className="w-3 h-3" />
@@ -262,23 +263,23 @@ const DashboardPage = () => {
                   </motion.div>
                 )}
 
-                {/* Filter Pills */}
-                <div className="flex flex-wrap gap-2">
+                {/* Filter Pills - Mobile Responsive Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-wrap gap-2">
                   {['all', 'high', 'medium', 'low', 'recent'].map((filter) => (
                     <motion.div
                       key={filter}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setFilterBy(filter)}
-                      className={`hover:text-[#A3A3A3] border hover:border-[#A3A3A3] px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 cursor-pointer flex items-center space-x-1.5 w-fit ${
+                      className={`hover:text-[#A3A3A3] border hover:border-[#A3A3A3] px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 cursor-pointer flex items-center justify-center text-center w-full lg:w-fit ${
                         getFilterColor(filter)} ${getFilterBorder(filter)}`}
                     >
-                      <span className="capitalize">
-                        {filter === 'all' ? 'All Reports' : 
-                         filter === 'high' ? 'High Score (80%+)' :
-                         filter === 'medium' ? 'Medium Score (60-79%)' :
-                         filter === 'low' ? 'Low Score (<60%)' :
-                         'Recent (Last 7 days)'}
+                      <span className="capitalize truncate">
+                        {filter === 'all' ? 'All' : 
+                         filter === 'high' ? 'High (80%+)' :
+                         filter === 'medium' ? 'Med (60-79%)' :
+                         filter === 'low' ? 'Low (<60%)' :
+                         'Recent (7d)'}
                       </span>
                     </motion.div>
                   ))}
@@ -289,7 +290,7 @@ const DashboardPage = () => {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex items-center justify-between"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0"
                   >
                     <motion.div
                       className="text-white border border-[#404040] px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#0A0A0A]/30 flex items-center space-x-1.5 w-fit"
@@ -306,7 +307,7 @@ const DashboardPage = () => {
                           setFilterBy('all');
                           setIsSearchActive(false);
                         }}
-                        className="text-[#737373] hover:text-white border border-[#404040] hover:border-[#A3A3A3] px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50"
+                        className="text-[#737373] hover:text-white border border-[#404040] hover:border-[#A3A3A3] px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-[#0A0A0A]/30 hover:bg-[#0A0A0A]/50 w-fit"
                       >
                         Clear All
                       </motion.button>
@@ -318,17 +319,17 @@ const DashboardPage = () => {
           </Card>
         </motion.div>
 
-        {/* Main Content Grid - Enhanced Layout */}
-        <div className="space-y-8 mb-8">
+        {/* Main Content Grid - Enhanced Mobile Layout */}
+        <div className="space-y-6 sm:space-y-8 mb-6 sm:mb-8">
           {/* Chart and Recent Reports Row */}
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Chart */}
-            <motion.div variants={itemVariants} className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            {/* Chart - Full width on mobile */}
+            <motion.div variants={itemVariants} className="lg:col-span-2 order-2 lg:order-1">
               <ScoreChart reports={filteredReports} />
             </motion.div>
 
-            {/* Recent Reports */}
-            <motion.div variants={itemVariants} className="lg:col-span-1">
+            {/* Recent Reports - Full width on mobile, appears first */}
+            <motion.div variants={itemVariants} className="lg:col-span-1 order-1 lg:order-2">
               <RecentReports reports={filteredReports?.slice(0, 5) || []} />
             </motion.div>
           </div>
@@ -338,24 +339,24 @@ const DashboardPage = () => {
         {(!reports || reports.length === 0) && (
           <motion.div
             variants={itemVariants}
-            className="text-center py-16"
+            className="text-center py-12 sm:py-16 px-4"
           >
-            <div className="w-24 h-24 bg-gradient-to-br from-[#262626] to-[#171717] rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[#373737]">
-              <FileText className="w-12 h-12 text-[#737373]" />
+            <div className="w-20 sm:w-24 h-20 sm:h-24 bg-gradient-to-br from-[#262626] to-[#171717] rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 border border-[#373737]">
+              <FileText className="w-10 sm:w-12 h-10 sm:h-12 text-[#737373]" />
             </div>
-            <h3 className="text-2xl font-bold text-[#A3A3A3] mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-[#A3A3A3] mb-3 sm:mb-4">
               Ready to optimize your first resume?
             </h3>
-            <p className="text-[#737373] mb-8 max-w-md mx-auto text-base leading-relaxed">
+            <p className="text-[#737373] mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base leading-relaxed">
               Upload your resume and job description to get instant ATS compatibility analysis and improvement suggestions.
             </p>
             <Button
               asChild
               size="lg"
-              className="inline-flex items-center space-x-3 px-8 py-4 text-base font-semibold shadow-xl hover:shadow-2xl bg-[#262626] hover:bg-[#373737] text-[#A3A3A3] border-[#373737]"
+              className="inline-flex items-center space-x-3 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold shadow-xl hover:shadow-2xl bg-[#262626] hover:bg-[#373737] text-[#A3A3A3] border-[#373737]"
             >
               <Link to="/">
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 sm:w-5 h-4 sm:h-5" />
                 <span>Analyze Your First Resume</span>
               </Link>
             </Button>

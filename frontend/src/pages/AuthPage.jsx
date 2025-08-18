@@ -98,19 +98,19 @@ const AuthPage = ({ type = 'login' }) => {
   };
 
   return (
-    <div className="min-h-screen bg-dark-100 flex items-center justify-center py-6 sm:py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-dark-100 flex items-center justify-center py-4 sm:py-6 lg:py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Lottie Animation - Positioned with overlap */}
       <div className="hidden lg:block absolute left-1/4 top-1/2 transform -translate-y-1/2 pointer-events-none z-0">
         <Lottie
           animationData={hireMeAnimation}
           loop={true}
           autoplay={true}
-          className="w-96 h-96 opacity-60"
+          className="w-80 xl:w-96 h-80 xl:h-96 opacity-60"
         />
       </div>
       
       {/* Form Content - Centered with higher z-index */}
-      <div className="max-w-sm w-full space-y-5 sm:space-y-6 relative z-10" style={{ perspective: "1200px" }}>
+      <div className="max-w-sm w-full space-y-4 sm:space-y-5 lg:space-y-6 relative z-10" style={{ perspective: "1200px" }}>
         <motion.div
           key={`header-${isLogin ? 'login' : 'signup'}`}
           initial={{ opacity: 0, y: -20 }}
@@ -119,13 +119,13 @@ const AuthPage = ({ type = 'login' }) => {
           className="text-center"
         >
           <motion.div 
-            className="flex justify-center mb-6"
+            className="flex justify-center mb-4 sm:mb-6"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
           </motion.div>
           <motion.h2 
-            className="text-3xl font-bold text-accent-400"
+            className="text-2xl sm:text-3xl font-bold text-accent-400"
             key={`title-${isLogin ? 'login' : 'signup'}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -172,10 +172,10 @@ const AuthPage = ({ type = 'login' }) => {
               }}
             >
               <Card className="hover:shadow-xl transition-all duration-300 border-dark-400 backdrop-blur-sm bg-dark-200/90 transform-gpu">
-                <CardContent className="p-5 sm:p-6 pt-6 sm:pt-8">
+                <CardContent className="p-4 sm:p-5 lg:p-6 pt-5 sm:pt-6 lg:pt-8">
                   <motion.form 
                     onSubmit={handleSubmit} 
-                    className="space-y-4"
+                    className="space-y-3 sm:space-y-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isLogin ? 1 : 0 }}
                     transition={{ duration: 0.3, delay: isLogin ? 0.4 : 0 }}
@@ -305,9 +305,9 @@ const AuthPage = ({ type = 'login' }) => {
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3, delay: 0.5 }}
                     >
-                      <p className="text-dark-700 text-xs flex items-center justify-center gap-1">
+                      <div className="text-dark-700 text-xs flex items-baseline justify-center gap-1">
                         <motion.span 
-                          className="bg-gradient-to-r from-dark-700 via-accent-400 to-dark-700 bg-clip-text text-transparent"
+                          className="bg-gradient-to-r from-dark-700 via-accent-400 to-dark-700 bg-clip-text text-transparent leading-none"
                           animate={{
                             backgroundPosition: ['200% 50%', '-100% 50%']
                           }}
@@ -325,11 +325,11 @@ const AuthPage = ({ type = 'login' }) => {
                         </motion.span>
                         <Link
                           to="/register"
-                          className="font-medium text-accent-300 hover:text-accent-400 transition-colors"
+                          className="font-medium text-accent-300 hover:text-accent-400 transition-colors leading-none"
                         >
                           Sign up
                         </Link>
-                      </p>
+                      </div>
                     </motion.div>
                   </motion.form>
                 </CardContent>
@@ -348,10 +348,10 @@ const AuthPage = ({ type = 'login' }) => {
               }}
             >
               <Card className="hover:shadow-xl transition-all duration-300 border-dark-400 backdrop-blur-sm bg-dark-200/90 transform-gpu">
-                <CardContent className="p-5 sm:p-6 pt-6 sm:pt-8">
+                <CardContent className="p-4 sm:p-5 lg:p-6 pt-5 sm:pt-6 lg:pt-8">
                   <motion.form 
                     onSubmit={handleSubmit} 
-                    className="space-y-4"
+                    className="space-y-3 sm:space-y-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: !isLogin ? 1 : 0 }}
                     transition={{ duration: 0.3, delay: !isLogin ? 0.4 : 0 }}
@@ -549,9 +549,9 @@ const AuthPage = ({ type = 'login' }) => {
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3, delay: 0.65 }}
                     >
-                      <p className="text-dark-700 text-xs flex items-center justify-center gap-1">
+                      <div className="text-dark-700 text-xs flex items-baseline justify-center gap-1">
                         <motion.span 
-                          className="bg-gradient-to-r from-dark-700 via-accent-400 to-dark-700 bg-clip-text text-transparent"
+                          className="bg-gradient-to-r from-dark-700 via-accent-400 to-dark-700 bg-clip-text text-transparent leading-none"
                           animate={{
                             backgroundPosition: ['200% 50%', '-100% 50%']
                           }}
@@ -569,11 +569,11 @@ const AuthPage = ({ type = 'login' }) => {
                         </motion.span>
                         <Link
                           to="/login"
-                          className="font-medium text-accent-300 hover:text-accent-400 transition-colors"
+                          className="font-medium text-accent-300 hover:text-accent-400 transition-colors leading-none"
                         >
                           Sign in
                         </Link>
-                      </p>
+                      </div>
                     </motion.div>
                   </motion.form>
                 </CardContent>

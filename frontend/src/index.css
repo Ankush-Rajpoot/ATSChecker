@@ -159,6 +159,58 @@ input[type="text"]:-webkit-autofill {
   background-color: #0A0A0A !important;
 }
 
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Improve tap targets for mobile */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+  
+  /* Optimize text rendering for mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  
+  /* Improve mobile scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Mobile-friendly spacing for cards */
+  .card {
+    @apply p-4;
+  }
+  
+  /* Optimize button sizing for mobile */
+  .button-primary, .button-secondary {
+    @apply px-4 py-3 text-sm;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .hover\:scale-105:hover {
+    transform: none !important;
+  }
+  
+  /* Use active states instead of hover for touch */
+  .button-primary:active {
+    @apply scale-95 bg-dark-600;
+  }
+  
+  .button-secondary:active {
+    @apply scale-95 bg-dark-400;
+  }
+}
+
 /* Loading spinner */
 .spinner {
   border: 3px solid #171717;
@@ -172,4 +224,36 @@ input[type="text"]:-webkit-autofill {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Mobile-responsive typography */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: clamp(0.875rem, 2.5vw, 1rem);
+  }
+  
+  .text-responsive-lg {
+    font-size: clamp(1.125rem, 4vw, 1.5rem);
+  }
+  
+  .text-responsive-xl {
+    font-size: clamp(1.5rem, 6vw, 2.25rem);
+  }
+}
+
+/* Improve mobile form experience */
+@media (max-width: 768px) {
+  .input-field {
+    @apply px-3 py-3 text-base;
+  }
+  
+  /* Better mobile modal experience */
+  .modal-mobile {
+    @apply m-2 max-h-[calc(100vh-1rem)] overflow-y-auto;
+  }
+  
+  /* Mobile-friendly dropdown positioning */
+  .dropdown-mobile {
+    @apply fixed inset-x-4 top-auto bottom-4 max-h-60 overflow-y-auto;
+  }
 }

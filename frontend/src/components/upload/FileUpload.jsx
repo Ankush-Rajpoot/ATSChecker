@@ -62,7 +62,7 @@ const FileUpload = ({ onFileSelect, accept = ".pdf,.doc,.docx,.txt", maxSize = 1
     <div className={className}>
       {!uploadedFile ? (
         <motion.div
-          className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
+          className={`relative border-2 border-dashed rounded-xl p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 ${
             dragActive 
               ? 'border-accent-300 bg-dark-400/50' 
               : error 
@@ -84,9 +84,9 @@ const FileUpload = ({ onFileSelect, accept = ".pdf,.doc,.docx,.txt", maxSize = 1
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <motion.div
-              className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center ${
+              className={`mx-auto w-12 sm:w-16 h-12 sm:h-16 rounded-full flex items-center justify-center ${
                 dragActive ? 'bg-dark-500' : 'bg-dark-400'
               }`}
               animate={{ 
@@ -95,17 +95,18 @@ const FileUpload = ({ onFileSelect, accept = ".pdf,.doc,.docx,.txt", maxSize = 1
               }}
               transition={{ duration: 0.3 }}
             >
-              <Upload className={`w-8 h-8 ${dragActive ? 'text-accent-300' : 'text-dark-700'}`} />
+              <Upload className={`w-6 sm:w-8 h-6 sm:h-8 ${dragActive ? 'text-accent-300' : 'text-dark-700'}`} />
             </motion.div>
             
             <div>
-              <h3 className={`text-lg font-medium ${dragActive ? 'text-accent-400' : 'text-accent-400'}`}>
+              <h3 className={`text-base sm:text-lg font-medium ${dragActive ? 'text-accent-400' : 'text-accent-400'}`}>
                 {dragActive ? 'Drop your file here' : 'Upload your resume'}
               </h3>
-              <p className="text-dark-700 mt-2">
-                Drag and drop your file here, or click to browse
+              <p className="text-dark-700 mt-1 sm:mt-2 text-sm sm:text-base">
+                <span className="hidden sm:inline">Drag and drop your file here, or click to browse</span>
+                <span className="sm:hidden">Tap to select your resume file</span>
               </p>
-              <p className="text-sm text-dark-700 mt-2">
+              <p className="text-xs sm:text-sm text-dark-700 mt-1 sm:mt-2">
                 Supports PDF, DOC, DOCX, TXT • Max {formatFileSize(maxSize)}
               </p>
             </div>
@@ -114,10 +115,10 @@ const FileUpload = ({ onFileSelect, accept = ".pdf,.doc,.docx,.txt", maxSize = 1
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center space-x-2 text-red-400 bg-red-900/20 px-4 py-2 rounded-lg border border-red-500/50"
+                className="flex items-center space-x-2 text-red-400 bg-red-900/20 px-3 sm:px-4 py-2 rounded-lg border border-red-500/50"
               >
-                <AlertCircle className="w-4 h-4" />
-                <span className="text-sm">{error}</span>
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">{error}</span>
               </motion.div>
             )}
           </div>
@@ -126,21 +127,21 @@ const FileUpload = ({ onFileSelect, accept = ".pdf,.doc,.docx,.txt", maxSize = 1
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-dark-300 border border-dark-500 rounded-xl p-4"
+          className="bg-dark-300 border border-dark-500 rounded-xl p-3 sm:p-4"
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-dark-500 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">{getFileIcon(uploadedFile.type)}</span>
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+              <div className="w-10 sm:w-12 h-10 sm:h-12 bg-dark-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-lg sm:text-2xl">{getFileIcon(uploadedFile.type)}</span>
               </div>
-              <div>
-                <h4 className="font-medium text-accent-400">{uploadedFile.name}</h4>
-                <p className="text-sm text-dark-700">{formatFileSize(uploadedFile.size)}</p>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-medium text-accent-400 truncate text-sm sm:text-base">{uploadedFile.name}</h4>
+                <p className="text-xs sm:text-sm text-dark-700">{formatFileSize(uploadedFile.size)}</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-green-400" />
+            <div className="flex items-center space-x-2 flex-shrink-0">
+              <CheckCircle className="w-4 sm:w-5 h-4 sm:h-5 text-green-400" />
               <motion.button
                 onClick={removeFile}
                 className="p-1 text-dark-700 hover:text-red-400 transition-colors rounded-full hover:bg-dark-400"

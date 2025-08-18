@@ -108,95 +108,104 @@ const ResultsPage = () => {
       variants={pageVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-screen bg-[#000000] py-4"
+      className="min-h-screen bg-[#000000] py-3 sm:py-4"
       id="results-container"
     >
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
         {/* Compact Header */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5"
+          className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-5"
         >
           <div className="flex items-center space-x-3">
             <motion.button
               onClick={() => navigate('/dashboard')}
-              className="p-1.5 text-dark-700 hover:text-accent-400 transition-colors rounded-lg hover:bg-dark-300"
+              className="p-1.5 text-dark-700 hover:text-accent-400 transition-colors rounded-lg hover:bg-dark-300 flex-shrink-0"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <ArrowLeft className="w-5 h-5" />
             </motion.button>
-            <div>
-              <h1 className="text-xl font-bold text-accent-400">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-xl font-bold text-accent-400 truncate">
                 ATS Analysis Results
               </h1>
-              <p className="text-dark-700 text-xs">
+              <p className="text-dark-700 text-xs truncate">
                 {report.fileName} • {new Date(report.analyzedAt).toLocaleDateString()}
               </p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-2 mt-3 sm:mt-0">
+          <div className="flex items-center space-x-2 flex-shrink-0">
             <Button
               onClick={handleShare}
               variant="outline"
-              className="inline-flex items-center space-x-1.5 text-xs px-2.5 py-1.5"
+              className="inline-flex items-center space-x-1.5 text-xs px-2 sm:px-2.5 py-1.5"
             >
               <Share className="w-3.5 h-3.5" />
-              <span>Share</span>
+              <span className="hidden xs:inline">Share</span>
             </Button>
             
             <Button
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="inline-flex items-center space-x-1.5 text-xs px-2.5 py-1.5"
+              className="inline-flex items-center space-x-1.5 text-xs px-2 sm:px-2.5 py-1.5"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>{isExporting ? 'Exporting...' : 'Export PDF'}</span>
+              <span className="hidden xs:inline">{isExporting ? 'Export...' : 'Export'}</span>
+              <span className="xs:hidden">PDF</span>
             </Button>
           </div>
         </motion.div>
 
-        {/* Main Layout Grid */}
-        <div className="grid lg:grid-cols-2 gap-4">
-          {/* Left Column */}
-          <div className="space-y-4">
-            {/* Score Card */}
+        {/* Main Layout Grid - Mobile First with Score Priority */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+          {/* Mobile: Score First, Desktop: Left Column */}
+          <div className="space-y-3 sm:space-y-4 order-1 lg:order-1">
+            {/* Score Card - Always First on Mobile */}
             <motion.div variants={itemVariants}>
               <ScoreCard score={report.score} />
             </motion.div>
 
-            {/* Improvement Suggestions with Scroll */}
+            {/* Mobile: Skills Analysis Right After Score */}
+            <motion.div variants={itemVariants} className="block lg:hidden">
+              <SkillsAnalysis 
+                matchedSkills={report.matchedSkills}
+                missingSkills={report.missingSkills}
+              />
+            </motion.div>
+
+            {/* Improvement Suggestions */}
             <motion.div variants={itemVariants}>
               <Suggestions suggestions={report.suggestions} report={report} />
             </motion.div>
           </div>
 
-          {/* Right Column - Section Breakdown */}
-          <motion.div variants={itemVariants}>
+          {/* Mobile: Section Breakdown After Score & Skills, Desktop: Right Column */}
+          <motion.div variants={itemVariants} className="order-2 lg:order-2">
             <SectionBreakdown sections={report.sections} />
           </motion.div>
         </div>
 
-        {/* Skills Analysis - Full Width with Scroll */}
-        <motion.div variants={itemVariants} className="mt-4">
+        {/* Skills Analysis - Desktop Only (Hidden on Mobile) */}
+        <motion.div variants={itemVariants} className="mt-3 sm:mt-4 hidden lg:block">
           <SkillsAnalysis 
             matchedSkills={report.matchedSkills}
             missingSkills={report.missingSkills}
           />
         </motion.div>
 
-        {/* Job Description Preview */}
-        <motion.div variants={itemVariants} className="mt-4">
+        {/* Job Description Preview - Mobile Optimized */}
+        <motion.div variants={itemVariants} className="mt-3 sm:mt-4">
           <Card className="bg-[#0A0A0A] border-[#373737]">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-white">
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-base sm:text-lg font-semibold text-white">
                 Job Description (Preview)
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="bg-[#171717] rounded-lg p-3 border border-[#262626]">
-                <p className="text-[#737373] text-xs leading-relaxed line-clamp-4">
+                <p className="text-[#737373] text-xs leading-relaxed line-clamp-3 sm:line-clamp-4">
                   {report.jobDescription || 'No job description available for this analysis.'}
                 </p>
               </div>
@@ -204,15 +213,15 @@ const ResultsPage = () => {
           </Card>
         </motion.div>
 
-        {/* Compact Action Buttons */}
+        {/* Compact Action Buttons - Mobile Optimized */}
         <motion.div
           variants={itemVariants}
-          className="text-center mt-6"
+          className="text-center mt-4 sm:mt-6"
         >
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4">
+          <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-center sm:items-center sm:space-x-4">
             <Button
               onClick={() => navigate('/')}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 font-medium shadow-lg hover:shadow-xl text-sm"
+              className="inline-flex items-center justify-center space-x-2 px-4 sm:px-5 py-2.5 font-medium shadow-lg hover:shadow-xl text-sm w-full sm:w-auto"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Analyze Another Resume</span>
@@ -220,7 +229,7 @@ const ResultsPage = () => {
             
             <motion.button
               onClick={() => navigate('/dashboard')}
-              className="inline-flex items-center space-x-1.5 text-dark-700 hover:text-accent-400 font-medium transition-colors text-sm"
+              className="inline-flex items-center justify-center space-x-1.5 text-dark-700 hover:text-accent-400 font-medium transition-colors text-sm w-full sm:w-auto py-2.5 sm:py-0"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

@@ -62,7 +62,7 @@ const ScoreCard = ({ score, className = '' }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className={`relative ${colors.bg}/30 ${colors.border}/40 border rounded-xl p-4 h-[196px] ${className} backdrop-blur-md overflow-hidden`}
+      className={`relative ${colors.bg}/30 ${colors.border}/40 border rounded-xl p-3 sm:p-4 h-auto min-h-[180px] sm:h-[196px] ${className} backdrop-blur-md overflow-hidden`}
       style={{
         background: 'rgba(10, 10, 10, 0.3)',
         borderColor: 'rgba(55, 55, 55, 0.4)',
@@ -94,12 +94,12 @@ const ScoreCard = ({ score, className = '' }) => {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          className="mb-1"
+          className="mb-2 sm:mb-1"
         >
           <div className="relative inline-block">
-            {/* Compact Score Circle */}
-            <div className="relative w-20 h-20 mx-auto">
-              <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+            {/* Mobile Responsive Score Circle */}
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto">
+              <svg className="w-16 h-16 sm:w-20 sm:h-20 transform -rotate-90" viewBox="0 0 36 36">
                 <path
                   d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
@@ -131,7 +131,7 @@ const ScoreCard = ({ score, className = '' }) => {
                   transition={{ delay: 0.5 }}
                   className="text-center"
                 >
-                  <div className={`text-xl font-bold ${colors.accent}`}>
+                  <div className={`text-lg sm:text-xl font-bold ${colors.accent}`}>
                     {score}
                   </div>
                   <div className={`text-xs font-medium ${colors.text}`}>
@@ -141,14 +141,14 @@ const ScoreCard = ({ score, className = '' }) => {
               </div>
             </div>
 
-            {/* Compact Score Icon */}
+            {/* Mobile Responsive Score Icon */}
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8, type: 'spring' }}
-              className={`absolute -bottom-2 -right-2 w-6 h-6 ${colors.bg} ${colors.border} border rounded-full flex items-center justify-center`}
+              className={`absolute -bottom-1 sm:-bottom-2 -right-1 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 ${colors.bg} ${colors.border} border rounded-full flex items-center justify-center`}
             >
-              <ScoreIcon className={`w-3 h-3 ${colors.icon}`} />
+              <ScoreIcon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${colors.icon}`} />
             </motion.div>
           </div>
         </motion.div>
@@ -157,27 +157,28 @@ const ScoreCard = ({ score, className = '' }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
+          className="mb-2 sm:mb-0"
         >
-          <h3 className={`text-xs font-bold mb-0.5 ${colors.accent}`}>
+          <h3 className={`text-xs sm:text-sm font-bold mb-1 ${colors.accent}`}>
             {getScoreMessage(score)}
           </h3>
-          <p className={`text-xs leading-relaxed ${colors.text}`}>
+          <p className={`text-xs leading-relaxed ${colors.text} px-1`}>
             {getScoreDescription(score)}
           </p>
         </motion.div>
 
-        {/* Compact Score Breakdown */}
+        {/* Mobile Responsive Score Breakdown */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="mt-2 grid grid-cols-3 gap-2"
+          className="mt-3 sm:mt-2 grid grid-cols-3 gap-1 sm:gap-2"
         >
           <div className="text-center">
             <div className={`text-xs font-bold ${colors.accent}`}>
               {score >= 80 ? '80+' : score >= 60 ? '60-79' : '<60'}
             </div>
-            <div className={`text-xs ${colors.text}`}>Score Range</div>
+            <div className={`text-xs ${colors.text}`}>Range</div>
           </div>
           <div className="text-center">
             <div className={`text-xs font-bold ${colors.accent}`}>
