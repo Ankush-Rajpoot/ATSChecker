@@ -47,12 +47,12 @@ router.post('/register', authLimiter, validate(schemas.register), async (req, re
       password
     });
 
-    // Generate token
-    const token = generateToken(user._id);
-
-    // Update plan limits
+    // Update plan limits and save
     user.updatePlanLimits();
     await user.save();
+
+    // Generate token
+    const token = generateToken(user._id);
 
     res.status(201).json({
       success: true,
@@ -72,9 +72,31 @@ router.post('/register', authLimiter, validate(schemas.register), async (req, re
 
   } catch (error) {
     console.error('Register error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Check for duplicate key error (user already exists)
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists with this email'
+      });
+    }
+    
+    // Check for validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: messages
+      });
+    }
+    
     res.status(500).json({
       success: false,
-      message: 'Error creating user account'
+      message: 'Error creating user account',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 });
