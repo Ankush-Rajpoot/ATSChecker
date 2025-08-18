@@ -51,79 +51,79 @@ const UploadForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-dark-100 py-5 relative overflow-hidden">
-      {/* Animated Floating Circles Background */}
-      <div className="absolute inset-0 opacity-60">
-        <motion.div
-          className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-accent-500/40 to-accent-400/20 blur-lg"
-          style={{ top: '10%', left: '15%' }}
-          animate={{
-            x: [0, 30, -20, 0],
-            y: [0, -40, 20, 0],
-            scale: [1, 1.1, 0.9, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-accent-400/35 to-accent-300/15 blur-md"
-          style={{ top: '60%', right: '20%' }}
-          animate={{
-            x: [0, -25, 15, 0],
-            y: [0, 30, -25, 0],
-            scale: [1, 0.8, 1.2, 1],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute w-40 h-40 rounded-full bg-gradient-to-br from-dark-400/50 to-dark-300/25 blur-xl"
-          style={{ bottom: '20%', left: '10%' }}
-          animate={{
-            x: [0, 40, -30, 0],
-            y: [0, -20, 35, 0],
-            scale: [1, 1.3, 0.7, 1],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute w-20 h-20 rounded-full bg-gradient-to-br from-accent-300/30 to-accent-500/10 blur-sm"
-          style={{ top: '30%', right: '10%' }}
-          animate={{
-            x: [0, -35, 20, 0],
-            y: [0, 25, -30, 0],
-            scale: [1, 1.4, 0.6, 1],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute w-36 h-36 rounded-full bg-gradient-to-br from-dark-500/45 to-dark-400/20 blur-lg"
-          style={{ top: '5%', right: '45%' }}
-          animate={{
-            x: [0, 20, -40, 0],
-            y: [0, -35, 15, 0],
-            scale: [1, 0.9, 1.5, 1],
-          }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
+    <div className="min-h-screen bg-[#000000] py-5 relative overflow-hidden">
+      {/* Animated Zigzag Thread Background */}
+      <div className="absolute inset-0 opacity-30">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 1920 1080"
+          preserveAspectRatio="xMidYMid slice"
+          fill="none"
+        >
+          {/* Base Thread Path */}
+          <motion.path
+            d="M 0 0 L 200 100 L 100 200 L 300 300 L 200 400 L 400 500 L 300 600 L 500 700 L 400 800 L 600 900 L 500 1000 L 700 1080"
+            stroke="url(#threadGradient)"
+            strokeWidth="1"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray="4,4"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ 
+              pathLength: 1, 
+              opacity: 1,
+              strokeDashoffset: [0, -8]
+            }}
+            transition={{ 
+              pathLength: { duration: 3, ease: "easeInOut" },
+              opacity: { duration: 1 },
+              strokeDashoffset: {
+                duration: 2,
+                repeat: Infinity,
+                ease: "linear"
+              }
+            }}
+          />
+          
+          {/* Shimmer Effect Path */}
+          <motion.path
+            d="M 0 0 L 200 100 L 100 200 L 300 300 L 200 400 L 400 500 L 300 600 L 500 700 L 400 800 L 600 900 L 500 1000 L 700 1080"
+            stroke="url(#shimmerGradient1)"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ 
+              pathLength: [0, 1, 0],
+              opacity: [0, 1, 0]
+            }}
+            transition={{ 
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+          
+          <defs>
+            <linearGradient id="threadGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#373737" stopOpacity="0.2" />
+              <stop offset="25%" stopColor="#525252" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="#737373" stopOpacity="0.6" />
+              <stop offset="75%" stopColor="#A3A3A3" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#373737" stopOpacity="0.2" />
+            </linearGradient>
+            
+            {/* Shimmer Gradient */}
+            <linearGradient id="shimmerGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#A3A3A3" stopOpacity="0" />
+              <stop offset="30%" stopColor="#ffffff" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="#A3A3A3" stopOpacity="1" />
+              <stop offset="70%" stopColor="#ffffff" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#A3A3A3" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
       
       <div className="max-w-6xl mx-auto px-3 sm:px-5 lg:px-7 relative z-10">
