@@ -12,7 +12,7 @@ const LoadingSpinner = ({ size = 'md', text = null, className = '' }) => {
   return (
     <div className={`flex flex-col items-center justify-center space-y-4 ${className}`}>
       <motion.div
-        className={`border-3 border-gray-200 border-t-primary-500 rounded-full ${sizeClasses[size]}`}
+        className={`border-3 border-[#171717] border-t-[#373737] rounded-full ${sizeClasses[size]}`}
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
       />
@@ -20,7 +20,7 @@ const LoadingSpinner = ({ size = 'md', text = null, className = '' }) => {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-sm text-gray-600 text-center"
+          className="text-sm text-[#737373] text-center"
         >
           {text}
         </motion.p>

@@ -10,6 +10,7 @@ import useATSStore from '../store/atsStore';
 import { generateATSReportPDF } from '../utils/pdfUtils';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+import { ResultsPageSkeleton } from '../components/skeletons';
 
 const ResultsPage = () => {
   const { id } = useParams();
@@ -82,14 +83,7 @@ const ResultsPage = () => {
   };
 
   if (loading || !report) {
-    return (
-      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="w-12 h-12 text-dark-700 mx-auto mb-4 animate-spin" />
-          <h2 className="text-2xl font-semibold text-accent-400">Loading report...</h2>
-        </div>
-      </div>
-    );
+    return <ResultsPageSkeleton />;
   }
 
   const pageVariants = {

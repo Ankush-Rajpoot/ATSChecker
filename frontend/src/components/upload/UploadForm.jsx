@@ -7,6 +7,7 @@ import ProgressBar from '../common/ProgressBar';
 import useATSStore from '../../store/atsStore';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/Card';
+import { AnalyzingStateSkeleton } from '../skeletons';
 
 const UploadForm = () => {
   const navigate = useNavigate();
@@ -46,41 +47,7 @@ const UploadForm = () => {
   };
 
   if (isAnalyzing) {
-    return (
-      <div className="min-h-screen bg-dark-100 flex items-center justify-center p-4">
-        <Card className="max-w-sm w-full border-dark-400/50 bg-dark-200/90 backdrop-blur-sm">
-          <CardContent className="p-6 text-center">
-            <div className="mb-5">
-              <motion.div
-                className="w-12 h-12 bg-gradient-to-r from-accent-500/20 to-accent-400/20 border border-accent-400/30 rounded-full flex items-center justify-center mx-auto mb-3"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              >
-                <Zap className="w-6 h-6 text-accent-300" />
-              </motion.div>
-              <h2 className="text-xl font-bold text-accent-400 mb-2">Analyzing Your Resume</h2>
-              <p className="text-dark-700 text-sm">
-                Our AI is carefully analyzing your resume against the job requirements...
-              </p>
-            </div>
-
-            <ProgressBar progress={progress} className="mb-3" />
-            
-            <motion.div 
-              className="text-xs text-dark-700"
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              {progress < 30 && "Reading your resume..."}
-              {progress >= 30 && progress < 50 && "Processing job description..."}
-              {progress >= 50 && progress < 80 && "Matching skills and keywords..."}
-              {progress >= 80 && progress < 100 && "Generating insights..."}
-              {progress >= 100 && "Almost done!"}
-            </motion.div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AnalyzingStateSkeleton />;
   }
 
   return (
@@ -264,13 +231,13 @@ const UploadForm = () => {
           >
             <Card className="h-full border-dark-400/50 bg-dark-200/80 backdrop-blur-sm hover:border-accent-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent-400/10 overflow-hidden">
               <div className="bg-black border-b border-dark-400 px-5 py-3">
-                <CardTitle className="flex items-center space-x-2 text-base text-white">
-                  <div className="p-1 bg-accent-400/20 rounded-lg">
+                <CardTitle className="flex items-center text-base text-white">
+                  <span className="relative flex items-center space-x-2 px-2.5 py-1 rounded-full border border-dark-400 bg-dark-200/30 hover:bg-dark-200/50 transition-all duration-200 overflow-hidden">
                     <FileText className="w-3.5 h-3.5 text-accent-300" />
-                  </div>
-                  <span className="bg-[#0A0A0A] border border-dark-400 px-2.5 py-1 rounded-lg text-gray-400">Upload Resume</span>
+                    <span className="text-xs text-gray-400">Upload Resume</span>
+                  </span>
                 </CardTitle>
-                <CardDescription className="text-xs text-dark-400 mt-1.5">
+                <CardDescription className="text-xs text-gray-400 mt-1.5">
                   Upload your resume in PDF, DOC, DOCX, or TXT format
                 </CardDescription>
               </div>
@@ -293,13 +260,13 @@ const UploadForm = () => {
           >
             <Card className="h-full border-dark-400/50 bg-dark-200/80 backdrop-blur-sm hover:border-accent-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent-400/10 overflow-hidden">
               <div className="bg-black border-b border-dark-400 px-5 py-3">
-                <CardTitle className="flex items-center space-x-2 text-base text-white">
-                  <div className="p-1 bg-accent-400/20 rounded-lg">
+                <CardTitle className="flex items-center text-base text-white">
+                  <span className="relative flex items-center space-x-2 px-2.5 py-1 rounded-full border border-dark-400 bg-dark-200/30 hover:bg-dark-200/50 transition-all duration-200 overflow-hidden">
                     <Target className="w-3.5 h-3.5 text-accent-300" />
-                  </div>
-                  <span className="bg-[#0A0A0A] border border-dark-400 px-2.5 py-1 rounded-lg text-gray-400">Job Description</span>
+                    <span className="text-xs text-gray-400">Job Description</span>
+                  </span>
                 </CardTitle>
-                <CardDescription className="text-xs text-dark-400 mt-1.5">
+                <CardDescription className="text-xs text-gray-400 mt-1.5">
                   Paste the job description you want to optimize your resume for
                 </CardDescription>
               </div>
