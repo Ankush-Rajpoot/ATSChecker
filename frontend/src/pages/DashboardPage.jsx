@@ -193,13 +193,13 @@ const DashboardPage = () => {
         {/* Quick Actions Bar */}
         <motion.div
           variants={itemVariants}
-          className="mb-6 sm:mb-8"
+          className="mb-3 sm:mb-4"
         >
           <Card className="bg-[#0A0A0A] border-[#171717]">
-            <CardContent className="p-4 sm:p-6 lg:p-8">
-              <div className="flex flex-col space-y-4">
+            <CardContent className="p-2 sm:p-2.5 lg:p-3">
+              <div className="flex flex-col space-y-2 sm:space-y-1.5">
                 {/* Header Row - Mobile Stack */}
-                <div className="flex flex-col space-y-4">
+                <div className="flex flex-col space-y-2 sm:space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     {/* Quick Actions Title */}
                     <motion.div
