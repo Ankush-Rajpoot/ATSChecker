@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-dark-100;
+  }
+  
+  body {
+    @apply bg-dark-100 text-accent-400 font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight text-accent-400;
+    line-height: 1.2;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-dark-300/50 backdrop-blur-md border border-dark-600/50;
+  }
+  
+  .button-primary {
+    @apply bg-dark-500 hover:bg-dark-600 text-accent-400 font-medium px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 border border-dark-600;
+  }
+  
+  .button-secondary {
+    @apply bg-dark-300 hover:bg-dark-400 text-accent-400 font-medium px-6 py-3 rounded-lg border border-dark-600 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+  
+  .card {
+    @apply bg-dark-300 rounded-xl shadow-sm border border-dark-600 p-6 transition-all duration-200 hover:shadow-md hover:border-dark-700;
+  }
+  
+  .input-field {
+    @apply block w-full px-4 py-3 border border-dark-600 rounded-lg focus:ring-2 focus:ring-dark-700 focus:border-dark-700 transition-colors bg-dark-300 text-accent-400 placeholder-dark-700;
+  }
+}
+
+@layer utilities {
+  .bg-size-200 {
+    background-size: 200% 100%;
+  }
+}
+
+/* Custom dark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-300;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-700;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #373737 #0A0A0A;
+}
+
+/* Autofill styles to prevent browser styling from overriding our design */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: inset 0 0 0px 1000px #0A0A0A !important;
+  -webkit-text-fill-color: #A3A3A3 !important;
+  background-color: #0A0A0A !important;
+  border-color: #373737 !important;
+  caret-color: #A3A3A3 !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Additional autofill protection for all states */
+input:-webkit-autofill::first-line {
+  color: #A3A3A3 !important;
+  background-color: #0A0A0A !important;
+}
+
+/* Ensure consistent styling during focus */
+input:focus:-webkit-autofill,
+input:focus:-webkit-autofill:hover {
+  -webkit-box-shadow: inset 0 0 0px 1000px #0A0A0A !important;
+  -webkit-text-fill-color: #A3A3A3 !important;
+  background-color: #0A0A0A !important;
+  border-color: #525252 !important;
+}
+
+/* Ensure icons stay visible and properly positioned during autofill */
+.relative input:-webkit-autofill ~ .absolute,
+.relative input:-webkit-autofill + .absolute {
+  z-index: 10 !important;
+  color: #737373 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+}
+
+/* Force icon visibility and styling consistency */
+.relative .absolute.pointer-events-none {
+  position: absolute !important;
+  z-index: 10 !important;
+  color: #737373 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Prevent any input state from affecting icons */
+input:focus ~ .absolute.pointer-events-none,
+input:hover ~ .absolute.pointer-events-none,
+input:active ~ .absolute.pointer-events-none,
+input:-webkit-autofill ~ .absolute.pointer-events-none {
+  color: #737373 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Special handling for password toggle buttons */
+.relative .absolute:not(.pointer-events-none) {
+  z-index: 10 !important;
+  color: #737373 !important;
+}
+
+.relative .absolute:not(.pointer-events-none):hover {
+  color: #A3A3A3 !important;
+}
+
+/* Override any browser default autofill styling */
+input[type="email"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill,
+input[type="text"]:-webkit-autofill {
+  -webkit-box-shadow: inset 0 0 0px 1000px #0A0A0A !important;
+  -webkit-text-fill-color: #A3A3A3 !important;
+  background: #0A0A0A !important;
+  background-color: #0A0A0A !important;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid #171717;
+  border-top: 3px solid #737373;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
