@@ -123,6 +123,16 @@ app.use('/api/user', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/email', emailRoutes);
 
+// Health check endpoint for keep-alive
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({

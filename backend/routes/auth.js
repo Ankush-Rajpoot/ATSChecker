@@ -314,18 +314,41 @@ router.get('/google/callback', (req, res, next) => {
     return res.redirect(`${frontendURL}/login?error=oauth_not_configured`);
   }
 
-  passport.authenticate('google', { session: false }, async (err, user) => {
+  passport.authenticate('google', { session: false }, async (err, userData) => {
     try {
-      if (err || !user) {
+      if (err || !userData) {
         console.error('Google OAuth callback error:', err);
         const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
         return res.redirect(`${frontendURL}/login?error=oauth_failed`);
       }
 
+      const { user, isNewUser } = userData;
+      console.log('🔐 Google OAuth callback - User:', user.email, 'New user:', isNewUser);
+
       // Update last login
       user.lastLogin = new Date();
       user.updatePlanLimits();
       await user.save();
+
+      // Send welcome email for new Google users (async, don't wait for completion)
+      if (isNewUser) {
+        setTimeout(async () => {
+          try {
+            console.log('📧 Sending welcome email to new Google user:', user.email);
+            const emailResult = await EmailService.sendWelcomeEmail(user);
+            if (emailResult.success) {
+              console.log('✅ Welcome email sent to Google user:', user.email);
+              if (emailResult.previewUrl) {
+                console.log('📧 Email preview:', emailResult.previewUrl);
+              }
+            } else {
+              console.log('❌ Welcome email failed for Google user:', emailResult.error);
+            }
+          } catch (emailError) {
+            console.error('❌ Welcome email error for Google user:', emailError);
+          }
+        }, 100);
+      }
 
       // Generate token
       const token = generateToken(user._id);
@@ -338,7 +361,8 @@ router.get('/google/callback', (req, res, next) => {
         email: user.email,
         plan: user.plan,
         avatar: user.avatar,
-        joinedAt: user.createdAt
+        joinedAt: user.createdAt,
+        isNewUser
       }))}`);
 
     } catch (error) {

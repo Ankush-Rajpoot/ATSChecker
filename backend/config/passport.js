@@ -16,24 +16,30 @@ if (isGoogleConfigured) {
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
+      console.log('🔐 Google OAuth processing for:', profile.emails[0].value);
+      
       // Check if user already exists
       let user = await User.findOne({ googleId: profile.id });
+      let isNewUser = false;
 
       if (user) {
-        return done(null, user);
+        console.log('🔐 Existing Google user found');
+        return done(null, { user, isNewUser });
       }
 
       // Check if user exists with same email
       user = await User.findOne({ email: profile.emails[0].value });
 
       if (user) {
+        console.log('🔐 Linking Google account to existing email user');
         // Link Google account to existing user
         user.googleId = profile.id;
         user.avatar = profile.photos[0].value;
         await user.save();
-        return done(null, user);
+        return done(null, { user, isNewUser });
       }
 
+      console.log('🔐 Creating new Google user');
       // Create new user
       user = new User({
         googleId: profile.id,
@@ -44,7 +50,10 @@ if (isGoogleConfigured) {
       });
 
       await user.save();
-      done(null, user);
+      isNewUser = true;
+      
+      console.log('🔐 New Google user created:', user.email);
+      done(null, { user, isNewUser });
     } catch (error) {
       console.error('Google OAuth error:', error);
       done(error, null);
