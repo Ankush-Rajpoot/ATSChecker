@@ -140,7 +140,7 @@ const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
   
   // Start keep-alive service to prevent Render from sleeping
-  // startKeepAlive();
+  startKeepAlive();
 });
 
 // Handle unhandled promise rejections
