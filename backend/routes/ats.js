@@ -5,6 +5,7 @@ const Report = require('../models/Report');
 const User = require('../models/User');
 const { analyzeResume } = require('../utils/atsAnalyzer');
 const { extractText } = require('../utils/fileProcessorCloudinary');
+const EmailService = require('../services/emailService');
 const path = require('path');
 
 const router = express.Router();
@@ -168,6 +169,73 @@ router.post('/analyze', authMiddleware, validate(schemas.analyzeResume), async (
       await req.user.save();
       
       console.log(`Analysis completed for report ${report._id} with score ${analysisResult.score}`);
+      
+      // Send email notification (async, don't wait for completion)
+      setTimeout(async () => {
+        try {
+          console.log('📧 === STARTING EMAIL NOTIFICATION PROCESS ===');
+          console.log('📧 User email:', req.user.email);
+          console.log('📧 Report ID:', report._id);
+          
+          // Get dashboard stats for email
+          console.log('📧 Fetching dashboard stats...');
+          const totalReports = await Report.countDocuments({ user: userId, status: 'completed' });
+          const scoreStats = await Report.aggregate([
+            { $match: { user: userId, status: 'completed' } },
+            {
+              $group: {
+                _id: null,
+                avgScore: { $avg: '$score' },
+                maxScore: { $max: '$score' },
+                minScore: { $min: '$score' }
+              }
+            }
+          ]);
+          
+          const dashboardStats = {
+            totalReports,
+            averageScore: Math.round(scoreStats[0]?.avgScore || 0),
+            highestScore: scoreStats[0]?.maxScore || 0,
+            lowestScore: scoreStats[0]?.minScore || 0
+          };
+          
+          console.log('📧 Dashboard stats:', dashboardStats);
+          
+          const reportData = {
+            id: report._id,
+            fileName: report.fileName,
+            score: report.score,
+            analyzedAt: report.createdAt,
+            matchedSkills: analysisResult.analysis.matchedSkills,
+            missingSkills: analysisResult.analysis.missingSkills,
+            suggestions: analysisResult.analysis.suggestions,
+            processingTime: analysisResult.processingTime
+          };
+          
+          console.log('📧 Report data prepared:', {
+            id: reportData.id,
+            fileName: reportData.fileName,
+            score: reportData.score,
+            analyzedAt: reportData.analyzedAt
+          });
+          
+          console.log('📧 Calling EmailService.sendReportEmail...');
+          const emailResult = await EmailService.sendReportEmail(req.user, reportData, dashboardStats);
+          console.log('📧 Email result:', emailResult);
+          
+          if (emailResult.success) {
+            console.log('✅ Report email sent successfully');
+            if (emailResult.previewUrl) {
+              console.log('📧 Email preview:', emailResult.previewUrl);
+            }
+          } else {
+            console.log('❌ Report email failed:', emailResult.error);
+          }
+        } catch (emailError) {
+          console.error('❌ Email sending error:', emailError);
+          console.error('❌ Email error stack:', emailError.stack);
+        }
+      }, 100); // Small delay to ensure response is sent first
       
       // Return complete analysis
       res.json({

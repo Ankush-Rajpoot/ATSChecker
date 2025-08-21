@@ -21,6 +21,7 @@ const authRoutes = require('./routes/auth');
 const atsRoutes = require('./routes/ats');
 const userRoutes = require('./routes/user');
 const uploadRoutes = require('./routes/uploadCloudinary'); // Using Cloudinary version
+const emailRoutes = require('./routes/email');
 
 const app = express();
 
@@ -43,6 +44,14 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   console.log('✅ Google OAuth configured');
 } else {
   console.warn('⚠️  Google OAuth not configured - Google sign-in disabled');
+}
+
+// Check Email configuration
+const { validateEmailConfig } = require('./config/email');
+if (validateEmailConfig()) {
+  console.log('✅ Email service configured');
+} else {
+  console.warn('⚠️  Email service not configured - using test email for development');
 }
 
 // Security middleware
@@ -112,6 +121,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/ats', atsRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/email', emailRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -130,7 +140,7 @@ const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
   
   // Start keep-alive service to prevent Render from sleeping
-  startKeepAlive();
+  // startKeepAlive();
 });
 
 // Handle unhandled promise rejections

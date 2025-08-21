@@ -4,6 +4,7 @@ const passport = require('../config/passport');
 const User = require('../models/User');
 const { validate, schemas } = require('../middleware/validation');
 const rateLimit = require('express-rate-limit');
+const EmailService = require('../services/emailService');
 
 const router = express.Router();
 
@@ -53,6 +54,23 @@ router.post('/register', authLimiter, validate(schemas.register), async (req, re
 
     // Generate token
     const token = generateToken(user._id);
+    
+    // Send welcome email (async, don't wait for completion)
+    setTimeout(async () => {
+      try {
+        const emailResult = await EmailService.sendWelcomeEmail(user);
+        if (emailResult.success) {
+          console.log('📧 Welcome email sent to:', user.email);
+          if (emailResult.previewUrl) {
+            console.log('📧 Email preview:', emailResult.previewUrl);
+          }
+        } else {
+          console.log('📧 Welcome email failed:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('📧 Welcome email error:', emailError);
+      }
+    }, 100);
 
     res.status(201).json({
       success: true,
