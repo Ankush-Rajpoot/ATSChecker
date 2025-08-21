@@ -93,8 +93,13 @@ const AuthPage = ({ type = 'login' }) => {
     }));
   };
 
-  const handleGoogleAuth = () => {
-    googleAuth();
+ const handleGoogleAuth = async () => {
+    try {
+      await googleAuth();
+    } catch (error) {
+      console.error('Google Auth failed:', error);
+      // Error is already handled in the store
+    }
   };
 
   return (

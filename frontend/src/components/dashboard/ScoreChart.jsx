@@ -39,6 +39,7 @@ const ScoreChart = ({ reports }) => {
 
   // Prepare chart data
   const chartData = reports
+    .sort((a, b) => new Date(a.analyzedAt) - new Date(b.analyzedAt)) // Sort by date ascending (oldest first)
     .slice(-10) // Last 10 reports
     .map((report, index) => ({
       name: `Report ${index + 1}`,

@@ -266,6 +266,9 @@ router.get('/me', authMiddleware, async (req, res) => {
 // @desc    Google OAuth - Initiate
 // @route   GET /api/auth/google
 // @access  Public
+// @desc    Google OAuth - Initiate
+// @route   GET /api/auth/google
+// @access  Public
 router.get('/google', (req, res, next) => {
   // Check if Google OAuth is configured
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -274,6 +277,9 @@ router.get('/google', (req, res, next) => {
       message: 'Google OAuth is not configured on this server'
     });
   }
+  
+  // Log the OAuth initiation for debugging
+  console.log('🔐 Initiating Google OAuth flow...');
   
   passport.authenticate('google', {
     scope: ['profile', 'email']

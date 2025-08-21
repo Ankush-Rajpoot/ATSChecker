@@ -117,12 +117,30 @@ const useAuthStore = create(
       googleAuth: async () => {
         set({ isLoading: true, error: null });
         try {
+          // First, wake up the server with a health check
+          console.log('🔄 Checking server status before OAuth...');
+          
+          const healthCheck = await fetch(`${API_BASE_URL.replace('/api', '')}/health`, {
+            method: 'GET',
+            cache: 'no-cache'
+          });
+          
+          if (!healthCheck.ok) {
+            throw new Error('Server is not responding. Please try again in a moment.');
+          }
+          
+          console.log('✅ Server is awake, proceeding with OAuth...');
+          
+          // Small delay to ensure server is fully ready
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
           // Redirect to Google OAuth endpoint
           window.location.href = `${API_BASE_URL}/auth/google`;
         } catch (error) {
+          console.error('Google Auth preparation failed:', error);
           set({ 
             isLoading: false, 
-            error: error.message || 'Google authentication failed' 
+            error: error.message || 'Server is starting up. Please try again in a moment.' 
           });
           return { success: false, error: error.message };
         }
