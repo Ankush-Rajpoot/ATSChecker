@@ -443,6 +443,12 @@ class EmailTemplate {
   }
 
   escapeHtml(text) {
+    // Handle non-string values
+    if (text === null || text === undefined) return '';
+    if (typeof text !== 'string') {
+      text = String(text);
+    }
+    
     const map = {
       '&': '&amp;',
       '<': '&lt;',
@@ -454,6 +460,12 @@ class EmailTemplate {
   }
 
   truncateText(text, length = 100) {
+    // Handle non-string values
+    if (text === null || text === undefined) return '';
+    if (typeof text !== 'string') {
+      text = String(text);
+    }
+    
     if (text.length <= length) return text;
     return text.substring(0, length) + '...';
   }

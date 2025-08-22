@@ -236,13 +236,23 @@ class ReportEmailTemplate extends EmailTemplate {
    * Generate skills analysis section
    */
   generateSkillsSection(matchedSkills = [], missingSkills = []) {
-    const matchedSkillsHtml = matchedSkills.slice(0, 6).map(skill => 
-      `<span class="skill-badge skill-matched">${this.escapeHtml(skill.skill || skill.name || skill)}</span>`
-    ).join('');
+    const matchedSkillsHtml = matchedSkills.slice(0, 6).map(skill => {
+      // Handle both string skills and object skills
+      const skillName = typeof skill === 'string' 
+        ? skill 
+        : (skill.skill || skill.name || skill.text || 'Skill');
+      
+      return `<span class="skill-badge skill-matched">${this.escapeHtml(skillName)}</span>`;
+    }).join('');
 
-    const missingSkillsHtml = missingSkills.slice(0, 4).map(skill => 
-      `<span class="skill-badge skill-missing">${this.escapeHtml(skill.skill || skill.name || skill)}</span>`
-    ).join('');
+    const missingSkillsHtml = missingSkills.slice(0, 4).map(skill => {
+      // Handle both string skills and object skills
+      const skillName = typeof skill === 'string' 
+        ? skill 
+        : (skill.skill || skill.name || skill.text || 'Skill');
+      
+      return `<span class="skill-badge skill-missing">${this.escapeHtml(skillName)}</span>`;
+    }).join('');
 
     if (!matchedSkillsHtml && !missingSkillsHtml) return '';
 
@@ -271,9 +281,14 @@ class ReportEmailTemplate extends EmailTemplate {
   generateSuggestionsSection(suggestions = []) {
     if (!suggestions || suggestions.length === 0) return '';
 
-    const suggestionsHtml = suggestions.slice(0, 5).map(suggestion => 
-      `<div class="suggestion-item">${this.escapeHtml(suggestion.text || suggestion)}</div>`
-    ).join('');
+    const suggestionsHtml = suggestions.slice(0, 5).map(suggestion => {
+      // Handle both string suggestions and object suggestions
+      const suggestionText = typeof suggestion === 'string' 
+        ? suggestion 
+        : (suggestion.suggestion || suggestion.text || 'Optimization suggestion');
+      
+      return `<div class="suggestion-item">${this.escapeHtml(suggestionText)}</div>`;
+    }).join('');
 
     return `
       <div class="suggestions-list">
@@ -289,6 +304,19 @@ class ReportEmailTemplate extends EmailTemplate {
    * Generate complete report email
    */
   generate(user, report, dashboardStats = null) {
+    console.log('🔍 ReportEmailTemplate.generate called with:', {
+      user: { name: user?.name, email: user?.email },
+      report: { 
+        fileName: report?.fileName, 
+        score: report?.score,
+        suggestions: report?.suggestions ? {
+          type: typeof report.suggestions,
+          length: Array.isArray(report.suggestions) ? report.suggestions.length : 'not array',
+          first: report.suggestions[0]
+        } : 'no suggestions'
+      }
+    });
+
     const scoreClass = this.getScoreClass(report.score);
     const formattedDate = this.formatDate(report.analyzedAt || new Date());
     
