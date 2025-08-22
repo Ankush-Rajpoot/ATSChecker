@@ -1,5 +1,5 @@
 const { sendEmail } = require('../config/email');
-const { generateReportEmailHTML, generateDashboardEmailHTML } = require('../utils/emailTemplates');
+const { emailTemplateFactory } = require('../templates/email');
 
 class EmailService {
   // Send report completion email
@@ -16,14 +16,45 @@ class EmailService {
         return { success: false, message: 'Email notifications disabled' };
       }
 
-      console.log('📧 Generating email HTML...');
-      const emailHtml = generateReportEmailHTML(user, report, dashboardStats);
-      console.log('📧 Email HTML generated, length:', emailHtml.length);
+      console.log('📧 Generating email HTML using template factory...');
+      
+      // Use the new template system
+      const emailResult = emailTemplateFactory.safeGenerateEmail('report', {
+        user: {
+          name: user.name,
+          email: user.email,
+          id: user._id
+        },
+        report: {
+          id: report._id,
+          fileName: report.fileName,
+          score: report.score,
+          analyzedAt: report.analyzedAt || report.createdAt,
+          processingTime: report.processingTime,
+          pageCount: report.pageCount,
+          matchedSkills: report.matchedSkills,
+          missingSkills: report.missingSkills,
+          suggestions: report.suggestions
+        },
+        dashboardStats: dashboardStats ? {
+          totalReports: dashboardStats.totalReports,
+          averageScore: dashboardStats.averageScore,
+          highestScore: dashboardStats.highestScore,
+          improvementTrend: dashboardStats.improvementTrend
+        } : null
+      });
+
+      if (!emailResult.success) {
+        console.error('❌ Email template generation failed:', emailResult.error);
+        return { success: false, error: emailResult.error };
+      }
+
+      console.log('📧 Email HTML generated successfully, length:', emailResult.html.length);
       
       const emailOptions = {
         to: user.email,
         subject: `🎯 ATS Analysis Complete: ${report.fileName} (${report.score}% Score)`,
-        html: emailHtml
+        html: emailResult.html
       };
 
       console.log('📧 Email options:', {
@@ -41,7 +72,8 @@ class EmailService {
         return {
           success: true,
           messageId: result.messageId,
-          previewUrl: result.previewUrl
+          previewUrl: result.previewUrl,
+          templateType: 'report'
         };
       } else {
         console.error('❌ Failed to send report email:', result.error);
@@ -57,34 +89,67 @@ class EmailService {
   // Send dashboard summary email
   static async sendDashboardEmail(user, dashboardData) {
     try {
+      console.log('📧 === SENDING DASHBOARD EMAIL ===');
+      console.log('📧 User:', { id: user._id, email: user.email, name: user.name });
+      console.log('📧 Dashboard Data:', dashboardData);
+
       if (!process.env.ENABLE_EMAIL_NOTIFICATIONS || process.env.ENABLE_EMAIL_NOTIFICATIONS === 'false') {
         console.log('📧 Email notifications disabled');
         return { success: false, message: 'Email notifications disabled' };
       }
 
-      const emailHtml = generateDashboardEmailHTML(user, dashboardData);
+      console.log('📧 Generating dashboard email HTML using template factory...');
+
+      // Use the new template system
+      const emailResult = emailTemplateFactory.safeGenerateEmail('dashboard', {
+        user: {
+          name: user.name,
+          email: user.email,
+          id: user._id
+        },
+        dashboardData: {
+          totalReports: dashboardData.totalReports || 0,
+          averageScore: dashboardData.averageScore || 0,
+          highestScore: dashboardData.highestScore || 0,
+          improvementTrend: dashboardData.improvementTrend || 0,
+          recentReports: dashboardData.recentReports || [],
+          period: dashboardData.period || 'week',
+          totalAnalysisTime: dashboardData.totalAnalysisTime,
+          mostMatchedSkills: dashboardData.mostMatchedSkills,
+          successfulOptimizations: dashboardData.successfulOptimizations
+        }
+      });
+
+      if (!emailResult.success) {
+        console.error('❌ Dashboard email template generation failed:', emailResult.error);
+        return { success: false, error: emailResult.error };
+      }
+
+      console.log('📧 Dashboard email HTML generated successfully, length:', emailResult.html.length);
       
       const emailOptions = {
         to: user.email,
-        subject: `📊 Your ATS Dashboard Summary - ${dashboardData.totalReports} Reports Analyzed`,
-        html: emailHtml
+        subject: `📊 Your ATS Dashboard Summary - ${dashboardData.totalReports || 0} Reports Analyzed`,
+        html: emailResult.html
       };
 
       const result = await sendEmail(emailOptions);
       
       if (result.success) {
-        console.log(`📧 Dashboard email sent to ${user.email}`);
+        console.log(`✅ Dashboard email sent successfully to ${user.email}`);
         return {
           success: true,
           messageId: result.messageId,
-          previewUrl: result.previewUrl
+          previewUrl: result.previewUrl,
+          templateType: 'dashboard'
         };
       } else {
-        console.error('Failed to send dashboard email:', result.error);
+        console.error('❌ Failed to send dashboard email:', result.error);
         return { success: false, error: result.error };
       }
     } catch (error) {
-      console.error('Error sending dashboard email:', error);
+      console.error('❌ Error sending dashboard email:', error);
+      console.error('❌ Error stack:', error.stack);
       return { success: false, error: error.message };
     }
   }
@@ -92,81 +157,55 @@ class EmailService {
   // Send welcome email for new users
   static async sendWelcomeEmail(user) {
     try {
+      console.log('📧 === SENDING WELCOME EMAIL ===');
+      console.log('📧 User:', { id: user._id, email: user.email, name: user.name });
+
       if (!process.env.ENABLE_EMAIL_NOTIFICATIONS || process.env.ENABLE_EMAIL_NOTIFICATIONS === 'false') {
+        console.log('📧 Email notifications disabled');
         return { success: false, message: 'Email notifications disabled' };
       }
 
-      const welcomeEmailHtml = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to ATS Checker</title>
-          <style>
-            body { font-family: 'Inter', sans-serif; background-color: #0A0A0A; color: #A3A3A3; margin: 0; padding: 20px; }
-            .container { max-width: 600px; margin: 0 auto; background: #171717; border-radius: 16px; overflow: hidden; border: 1px solid #262626; }
-            .header { background: linear-gradient(135deg, #373737 0%, #262626 100%); padding: 40px 32px; text-align: center; }
-            .logo { font-size: 32px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
-            .content { padding: 32px; }
-            .greeting { font-size: 20px; font-weight: 600; color: #FFFFFF; margin-bottom: 16px; }
-            .message { color: #A3A3A3; line-height: 1.6; margin-bottom: 24px; }
-            .cta-button { display: inline-block; background: linear-gradient(135deg, #373737 0%, #262626 100%); color: #FFFFFF; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; border: 1px solid #404040; }
-            .footer { background: #262626; padding: 24px; text-align: center; color: #737373; font-size: 14px; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <div class="logo">🎯 ATS Checker</div>
-              <div style="color: #737373;">Welcome to the future of resume optimization</div>
-            </div>
-            <div class="content">
-              <div class="greeting">Welcome aboard, ${user.name}! 🚀</div>
-              <div class="message">
-                Thank you for joining ATS Checker! You're now equipped with powerful AI-driven tools to optimize your resume for Applicant Tracking Systems.
-                <br><br>
-                <strong>What you can do:</strong><br>
-                • Analyze resume compatibility with job descriptions<br>
-                • Get detailed ATS optimization suggestions<br>
-                • Track your improvement progress<br>
-                • Export professional reports<br>
-                <br>
-                Ready to get started?
-              </div>
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="${process.env.FRONTEND_URL}/dashboard" class="cta-button">Start Your First Analysis →</a>
-              </div>
-            </div>
-            <div class="footer">
-              Need help? Contact us at support@atschecker.com
-            </div>
-          </div>
-        </body>
-        </html>
-      `;
+      console.log('📧 Generating welcome email HTML using template factory...');
+
+      // Use the new template system
+      const emailResult = emailTemplateFactory.safeGenerateEmail('welcome', {
+        user: {
+          name: user.name,
+          email: user.email,
+          id: user._id
+        }
+      });
+
+      if (!emailResult.success) {
+        console.error('❌ Welcome email template generation failed:', emailResult.error);
+        return { success: false, error: emailResult.error };
+      }
+
+      console.log('📧 Welcome email HTML generated successfully, length:', emailResult.html.length);
 
       const emailOptions = {
         to: user.email,
         subject: '🎯 Welcome to ATS Checker - Start Optimizing Your Resume!',
-        html: welcomeEmailHtml
+        html: emailResult.html
       };
 
       const result = await sendEmail(emailOptions);
       
       if (result.success) {
-        console.log(`📧 Welcome email sent to ${user.email}`);
+        console.log(`✅ Welcome email sent successfully to ${user.email}`);
         return {
           success: true,
           messageId: result.messageId,
-          previewUrl: result.previewUrl
+          previewUrl: result.previewUrl,
+          templateType: 'welcome'
         };
       } else {
-        console.error('Failed to send welcome email:', result.error);
+        console.error('❌ Failed to send welcome email:', result.error);
         return { success: false, error: result.error };
       }
     } catch (error) {
-      console.error('Error sending welcome email:', error);
+      console.error('❌ Error sending welcome email:', error);
+      console.error('❌ Error stack:', error.stack);
       return { success: false, error: error.message };
     }
   }
@@ -174,29 +213,198 @@ class EmailService {
   // Test email functionality
   static async sendTestEmail(userEmail) {
     try {
-      const testEmailHtml = `
-        <div style="font-family: Inter, sans-serif; background: #0A0A0A; color: #A3A3A3; padding: 20px;">
-          <div style="max-width: 500px; margin: 0 auto; background: #171717; padding: 32px; border-radius: 12px; border: 1px solid #262626;">
-            <h2 style="color: #FFFFFF; margin-bottom: 16px;">📧 Email Test Successful!</h2>
-            <p>Your ATS Checker email configuration is working correctly.</p>
-            <p style="color: #737373; font-size: 14px; margin-top: 24px;">
-              Sent at: ${new Date().toLocaleString()}
-            </p>
-          </div>
-        </div>
-      `;
+      console.log('📧 === SENDING TEST EMAIL ===');
+      console.log('📧 Email:', userEmail);
+
+      // Use the new template system
+      const emailResult = emailTemplateFactory.safeGenerateEmail('test', {
+        userEmail: userEmail,
+        additionalInfo: {
+          environment: process.env.NODE_ENV || 'development',
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      if (!emailResult.success) {
+        console.error('❌ Test email template generation failed:', emailResult.error);
+        return { success: false, error: emailResult.error };
+      }
+
+      console.log('📧 Test email HTML generated successfully, length:', emailResult.html.length);
 
       const emailOptions = {
         to: userEmail,
-        subject: '✅ ATS Checker Email Test',
-        html: testEmailHtml
+        subject: '✅ ATS Checker Email Test - Configuration Successful',
+        html: emailResult.html
       };
 
-      return await sendEmail(emailOptions);
+      const result = await sendEmail(emailOptions);
+      
+      if (result.success) {
+        console.log(`✅ Test email sent successfully to ${userEmail}`);
+        return {
+          success: true,
+          messageId: result.messageId,
+          previewUrl: result.previewUrl,
+          templateType: 'test'
+        };
+      } else {
+        console.error('❌ Failed to send test email:', result.error);
+        return { success: false, error: result.error };
+      }
     } catch (error) {
-      console.error('Error sending test email:', error);
+      console.error('❌ Error sending test email:', error);
+      console.error('❌ Error stack:', error.stack);
       return { success: false, error: error.message };
     }
+  }
+
+  // Send maintenance notification email
+  static async sendMaintenanceNotification(user, maintenanceInfo) {
+    try {
+      console.log('📧 === SENDING MAINTENANCE NOTIFICATION ===');
+      console.log('📧 User:', { email: user.email, name: user.name });
+      console.log('📧 Maintenance Info:', maintenanceInfo);
+
+      const emailResult = emailTemplateFactory.safeGenerateEmail('maintenance', {
+        user: {
+          name: user.name,
+          email: user.email
+        },
+        maintenanceInfo: maintenanceInfo
+      });
+
+      if (!emailResult.success) {
+        console.error('❌ Maintenance email template generation failed:', emailResult.error);
+        return { success: false, error: emailResult.error };
+      }
+
+      const emailOptions = {
+        to: user.email,
+        subject: '🔧 Scheduled Maintenance Notice - ATS Checker',
+        html: emailResult.html
+      };
+
+      const result = await sendEmail(emailOptions);
+      
+      if (result.success) {
+        console.log(`✅ Maintenance notification sent to ${user.email}`);
+        return {
+          success: true,
+          messageId: result.messageId,
+          previewUrl: result.previewUrl,
+          templateType: 'maintenance'
+        };
+      } else {
+        console.error('❌ Failed to send maintenance notification:', result.error);
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('❌ Error sending maintenance notification:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Send error notification email
+  static async sendErrorNotification(user, errorInfo) {
+    try {
+      console.log('📧 === SENDING ERROR NOTIFICATION ===');
+      console.log('📧 User:', { email: user.email, name: user.name });
+      console.log('📧 Error Info:', errorInfo);
+
+      const emailResult = emailTemplateFactory.safeGenerateEmail('error', {
+        user: {
+          name: user.name,
+          email: user.email
+        },
+        errorInfo: errorInfo
+      });
+
+      if (!emailResult.success) {
+        console.error('❌ Error email template generation failed:', emailResult.error);
+        return { success: false, error: emailResult.error };
+      }
+
+      const emailOptions = {
+        to: user.email,
+        subject: '❌ Service Alert - ATS Checker',
+        html: emailResult.html
+      };
+
+      const result = await sendEmail(emailOptions);
+      
+      if (result.success) {
+        console.log(`✅ Error notification sent to ${user.email}`);
+        return {
+          success: true,
+          messageId: result.messageId,
+          previewUrl: result.previewUrl,
+          templateType: 'error'
+        };
+      } else {
+        console.error('❌ Failed to send error notification:', result.error);
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('❌ Error sending error notification:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Send custom notification email
+  static async sendCustomNotification(user, notificationData) {
+    try {
+      console.log('📧 === SENDING CUSTOM NOTIFICATION ===');
+      console.log('📧 User:', { email: user.email, name: user.name });
+      console.log('📧 Notification Data:', notificationData);
+
+      const emailResult = emailTemplateFactory.safeGenerateEmail('notification', {
+        user: {
+          name: user.name,
+          email: user.email
+        },
+        notificationData: notificationData
+      });
+
+      if (!emailResult.success) {
+        console.error('❌ Custom notification template generation failed:', emailResult.error);
+        return { success: false, error: emailResult.error };
+      }
+
+      const emailOptions = {
+        to: user.email,
+        subject: notificationData.subject || 'Notification from ATS Checker',
+        html: emailResult.html
+      };
+
+      const result = await sendEmail(emailOptions);
+      
+      if (result.success) {
+        console.log(`✅ Custom notification sent to ${user.email}`);
+        return {
+          success: true,
+          messageId: result.messageId,
+          previewUrl: result.previewUrl,
+          templateType: 'custom'
+        };
+      } else {
+        console.error('❌ Failed to send custom notification:', result.error);
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('❌ Error sending custom notification:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Get available email template types
+  static getAvailableTemplateTypes() {
+    return emailTemplateFactory.getAvailableTypes();
+  }
+
+  // Validate email data before sending
+  static validateEmailData(type, data) {
+    return emailTemplateFactory.validateEmailData(type, data);
   }
 }
 
